@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "game", "game.csproj", "{500CA863-DF15-4B0D-84EE-1FB4364159FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M2Mqtt.Net", "..\..\paho.mqtt.m2mqtt\M2Mqtt\M2Mqtt.Net.csproj", "{A11AEF5A-B246-4FE8-8330-06DB73CC8074}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Frontend", "..\Frontend\Frontend.csproj", "{9978EE1F-E348-4696-B722-0804206E23F1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "classes", "..\classes\classes.csproj", "{E4FAF66F-17CC-4796-93BF-465799396709}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{500CA863-DF15-4B0D-84EE-1FB4364159FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{500CA863-DF15-4B0D-84EE-1FB4364159FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{500CA863-DF15-4B0D-84EE-1FB4364159FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{500CA863-DF15-4B0D-84EE-1FB4364159FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9978EE1F-E348-4696-B722-0804206E23F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9978EE1F-E348-4696-B722-0804206E23F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9978EE1F-E348-4696-B722-0804206E23F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9978EE1F-E348-4696-B722-0804206E23F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A11AEF5A-B246-4FE8-8330-06DB73CC8074}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4FAF66F-17CC-4796-93BF-465799396709}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4FAF66F-17CC-4796-93BF-465799396709}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4FAF66F-17CC-4796-93BF-465799396709}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4FAF66F-17CC-4796-93BF-465799396709}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

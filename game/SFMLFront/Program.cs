@@ -14,9 +14,9 @@ namespace SFMLFront
     class Program
     {
         const int PLAYER_START_X = 30;
-        const int PLAYER_START_Y = 150;
+        const int PLAYER_START_Y = 170;
         const int OPPONENT_START_X = 500;
-        const int OPPONENT_START_Y = 150;
+        const int OPPONENT_START_Y = 170;
         
         const int SQUARE_SIZE = 30;
         const int SPACING_SIZE = 10;
@@ -28,8 +28,8 @@ namespace SFMLFront
         static RectangleShape[,] fieldMain = new RectangleShape[SIZE, SIZE];
         static RectangleShape[,] fieldOpponent = new RectangleShape[SIZE, SIZE];
         static List<RectangleShape> shipsToChoose = new List<RectangleShape>();
-        static Battlefield mainBF = new Battlefield();
-        static Battlefield opponentBF = new Battlefield();
+        static Battlefield mainBF = new Battlefield("Mike");
+        static Battlefield opponentBF = new Battlefield("Olena");
 
         static bool choosing = true;
         static bool hovering = false;
@@ -52,9 +52,23 @@ namespace SFMLFront
 
 
             // Start the game loop
+            Font main = new Font("TheBattleCont.ttf");
 
+            Text mainName = new Text();
+            mainName.Font = main;
+            mainName.DisplayedString = mainBF.Name;
+            mainName.CharacterSize = 65;
+            mainName.FillColor = Color.Green;
+            mainName.Position = new Vector2f(PLAYER_START_X, PLAYER_START_Y - mainName.CharacterSize - 20);
+
+            Text opponentName = new Text();
+            opponentName.Font = main;
+            opponentName.DisplayedString = opponentBF.Name;
+            opponentName.CharacterSize = 65;
+            opponentName.FillColor = Color.Red;
+            opponentName.Position = new Vector2f(OPPONENT_START_X, OPPONENT_START_Y - opponentName.CharacterSize - 20);
             DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-            DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+            //DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
             while (window.IsOpen)
             {
                 window.Clear();
@@ -66,10 +80,11 @@ namespace SFMLFront
                 switch (f.Player)
                 {
                     case 1:
-                        fieldMain[f.X, f.Y].FillColor = Color.Red;
+                        fieldMain[f.X, f.Y].FillColor = Color.White;
                         break;
                     case 2:
-                        fieldOpponent[f.X, f.Y].FillColor = Color.Red;
+
+                        fieldOpponent[f.X, f.Y].FillColor = Color.White;
                         break;
                     default:
                         DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
@@ -77,7 +92,8 @@ namespace SFMLFront
                         break;
                 }
                 //window.Draw(circle);
-                DisplayBF(window, fieldOpponent, SIZE);
+                if(!(opponentBF  is null))
+                    DisplayBF(window, fieldOpponent, SIZE);
                 DisplayBF(window, fieldMain, SIZE);
                 DrawShips(window);
                 if (chosenShip != null)
@@ -85,7 +101,8 @@ namespace SFMLFront
                     DrawShip(Mouse.GetPosition(window), window, chosenShip, Color.Red);
                 }
                 // Finally, display the rendered frame on screen
-
+                window.Draw(mainName);
+                window.Draw(opponentName);
                 window.Display();
             }
 
@@ -100,24 +117,37 @@ namespace SFMLFront
                 
                 RenderWindow w = (RenderWindow)sender;
                 Field f = GetMouseField(Mouse.GetPosition(w));
-                switch (f.Player)
+            if (e.Button == Mouse.Button.Right && chosenShip != null)
+            {
+                chosenShip.setPosition(chosenShip.coords.x, chosenShip.coords.y, chosenShip.direction == Direction.Horisontal ? Direction.Vertical : Direction.Horisontal);
+            }
+            switch (f.Player)
                 {
                     //player field
                     case 1:
-                    if (chosenShip != null)
+
+                    if (e.Button == Mouse.Button.Left)
                     {
-                        if (e.Button == Mouse.Button.Left)
+                        if (chosenShip != null)
                         {
                             chosenShip.setPosition(f.X, f.Y, chosenShip.direction);
-                            mainBF.addShip(chosenShip);
-                            chosenShip = null;
+                            if (!mainBF.addShip(chosenShip))
+                            {
+                                MessageBox.Show("You cannot place this ship here");
+
+                            }
+                            else
+                            {
+                                chosenShip = null;
+                            }
                         }
-                        else if (e.Button == Mouse.Button.Right)
+                        else
                         {
-                            chosenShip.setPosition(chosenShip.coords.x, chosenShip.coords.y, chosenShip.direction == Direction.Horisontal ? Direction.Vertical : Direction.Horisontal);
-                            
+                            mainBF.Hit(new Coords(f.X, f.Y));
                         }
                     }
+                        
+                   
                         //mainBF.field[f.X, f.Y] = 2;
                         break;
                     case 2:             //opponent field
@@ -153,6 +183,10 @@ namespace SFMLFront
 
         private static void M_gotHit(object sender, EventArgs e)
         {
+            if(opponentBF is null)
+            {
+                return;
+            }
             opponentBF.addShot((Coords)sender);
             //Console.WriteLine(((Coords)sender).x);
             DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
@@ -160,40 +194,40 @@ namespace SFMLFront
 
         
 
-        private static void Window_MouseMoved(object sender, SFML.Window.MouseMoveEventArgs e)
-        {
-            var window = (RenderWindow)sender;
-            int xt = e.X;
-            int yt = e.Y;
+        //private static void Window_MouseMoved(object sender, SFML.Window.MouseMoveEventArgs e)
+        //{
+        //    var window = (RenderWindow)sender;
+        //    int xt = e.X;
+        //    int yt = e.Y;
            
 
-            if (mouseOverSquare(PLAYER_START_X, PLAYER_START_Y, e.X, e.Y))
-            {
-                //Console.WriteLine("IN");
-                xt -= PLAYER_START_X;
-                yt -= PLAYER_START_Y;
-                int yf = yt / (SQUARE_SIZE + SPACING_SIZE);
-                int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
-                if (mainBF.field[xf, yf] == 0)
-                    fieldMain[xf, yf].FillColor = Color.Red;
+        //    if (mouseOverSquare(PLAYER_START_X, PLAYER_START_Y, e.X, e.Y))
+        //    {
+        //        //Console.WriteLine("IN");
+        //        xt -= PLAYER_START_X;
+        //        yt -= PLAYER_START_Y;
+        //        int yf = yt / (SQUARE_SIZE + SPACING_SIZE);
+        //        int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
+        //        if (mainBF.field[xf, yf] == 0)
+        //            fieldMain[xf, yf].FillColor = Color.Red;
 
-            }
-            else if(mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, e.X, e.Y))
-            {
-                xt -= OPPONENT_START_X;
-                yt -= OPPONENT_START_Y;
-                int yf = yt / (SQUARE_SIZE + SPACING_SIZE);
-                int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
-                if (opponentBF.field[xf, yf] == 0)
-                    fieldOpponent[xf, yf].FillColor = Color.Red;
-            }
-            else
-            {
-                //Console.WriteLine("OUT");
-                DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-                DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
-            }
-        }
+        //    }
+        //    else if(mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, e.X, e.Y))
+        //    {
+        //        xt -= OPPONENT_START_X;
+        //        yt -= OPPONENT_START_Y;
+        //        int yf = yt / (SQUARE_SIZE + SPACING_SIZE);
+        //        int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
+        //        if (opponentBF.field[xf, yf] == 0)
+        //            fieldOpponent[xf, yf].FillColor = Color.Red;
+        //    }
+        //    else
+        //    {
+        //        //Console.WriteLine("OUT");
+        //        DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
+        //        DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+        //    }
+        //}
         
         
         private static int getShipFromSquare(int square)
@@ -221,7 +255,7 @@ namespace SFMLFront
                 int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
                 return new Field(xf, yf, 1);
             }
-            else if (mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, mousePos.X, mousePos.Y))
+            else if (mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, mousePos.X, mousePos.Y) && !(opponentBF is null))
             {
                 int xt = mousePos.X - OPPONENT_START_X;
                 int yt = mousePos.Y - OPPONENT_START_Y;
@@ -305,6 +339,8 @@ namespace SFMLFront
         }
         private static void DrawBattlefield(Battlefield b, int startX, int startY, RectangleShape[,] shape)
         {
+            if (b is null)
+                return;
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)
@@ -315,13 +351,18 @@ namespace SFMLFront
                     {
                         case 0:
                             s.FillColor = Color.Blue;
-
                             break;
                         case 1:
                             s.FillColor = Color.Green;
                             break;
                         case 2:
                             s.FillColor = Color.Yellow;
+                            break;
+                        case 3:
+                            s.FillColor = Color.Cyan;
+                            break;
+                        case 4:
+                            s.FillColor = Color.Red;
                             break;
                         default:
                             s.FillColor = Color.Black;

@@ -6,17 +6,29 @@ using System.Threading.Tasks;
 
 namespace classes
 {
+    /// <summary>
+    /// field 
+    /// 0 - empty
+    /// 1 - ship tile
+    /// 2 - missed shot
+    /// 3 - hurt ship
+    /// 4 - destroyed ship
+    /// </summary>
+
     public class Battlefield
     {
         public List<Ship> ships;
         public List<Coords> shots;
 
+        public string Name;
+
         public short[,] field = new short[10,10];
 
-        public Battlefield()
+        public Battlefield(string name)
         {
             shots = new List<Coords>();
             ships = new List<Ship>();
+            Name = name;
             //addShip(new Ship(2, 4, 3, Direction.Horisontal));
             //addShip(new Ship(1, 1, 1, Direction.Horisontal));
             //addShip(new Ship(2, 7, 3, Direction.Vertical));
@@ -57,9 +69,16 @@ namespace classes
             return true;
         }
 
+        public bool fieldReady()
+        {
+            if (this.ships.Count == 7)
+                return true;
+            return false;
+        }
+
         public bool addShip(Ship s)
         {
-            if (CheckCollision(s))
+            if (CheckCollision(s) && checkMaxShips(s.size))
             {
                 ships.Add(s);
                 addShipToField(s);
@@ -69,17 +88,58 @@ namespace classes
                 return false;
             }
         }
-
-        public HitResponse Hit(Coords c) 
+        private bool checkMaxShips(int size)
+        {
+            int count = 0;
+            foreach (Ship s in this.ships)
+                if (s.size == size)
+                    count++;
+            if (size < 3)
+            {
+                if (count > 1)
+                    return false;
+                return true;
+            }
+            else
+            {
+                if (count > 0)
+                    return false;
+                return true;
+            }
+        }
+        public void Hit(Coords c) 
         {
             HitResponse res = HitResponse.Miss;
-            foreach(Ship s in ships)
+            if (field[c.x, c.y] < 2)
             {
-                res = s.CheckHit(c);
-                if (res != HitResponse.Miss)
-                    return res;
+                
+                foreach (Ship s in ships)
+                {
+                    res = s.CheckHit(c);
+                    if (res == HitResponse.Hit)
+                    {
+                        
+                        field[c.x, c.y] = 3;
+                        break;
+                    }
+                    else if (res == HitResponse.Destroy)
+                    {
+                        foreach(Coords co in s.squares)
+                        field[co.x, co.y] = 4;
+                        break;
+                    }
+
+                }
+                if(res == HitResponse.Miss)
+                {
+                    field[c.x, c.y] = 2;
+                }
+                }
+            else
+            {
+                res = HitResponse.Error;
             }
-            return res;
+            //return res;
         }
 
         public List<Coords> GetCoords()

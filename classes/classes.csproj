@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Battlefield.cs" />
+    <Compile Include="CommandConvert.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="mqtt.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

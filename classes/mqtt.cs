@@ -16,6 +16,7 @@ namespace classes
         MqttClient client;
 
         public event EventHandler gotHit;
+        public event EventHandler gameStart;
 
         public void connect()
         {
@@ -40,20 +41,21 @@ namespace classes
 
         private void getCommand(object sender, MqttMsgPublishEventArgs e)
         {
-            WeaponFireComm c = JsonConvert.DeserializeObject<WeaponFireComm>(Encoding.UTF8.GetString(e.Message));
+            //var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Objects}
+            var c = JsonConvert.DeserializeObject<WeaponFireComm>(Encoding.UTF8.GetString(e.Message));
             if(c is WeaponFireComm)
             {
-                
                 WeaponFireComm co = (WeaponFireComm)c;
                 gotHit.Invoke(new Coords(co.x, co.y), EventArgs.Empty);
             }
         }
     }
+
+
     public class Command
     {
         public string command { get; set; }
     }
-
     public class PingStartComm : Command
     {
         public string fleetName { get; set; }

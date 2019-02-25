@@ -15,7 +15,8 @@ namespace classes
     {
         Miss, 
         Hit,
-        Destroy
+        Destroy,
+        Error
     }
 
     public class Ship
@@ -23,7 +24,8 @@ namespace classes
         public int size { get; set; }
        public Coords coords { get; private set; }
 
-        public List<Coords> squares; 
+        public List<Coords> squares;
+        private List<Coords> aliveSquares;
 
         public Direction direction { get; set; }
 
@@ -32,6 +34,7 @@ namespace classes
         public void setPosition(int x, int y, Direction d)
         {
             squares.Clear();
+            aliveSquares.Clear();
             this.direction = d;
             this.coords = new Coords(x, y);
             if (d == Direction.Vertical)
@@ -39,6 +42,7 @@ namespace classes
                 for (int i = 0; i < size; i++)
                 {
                     squares.Add(new Coords(x, y + i));
+                    aliveSquares.Add(new Coords(x, y + i));
                 }
             }
             else
@@ -46,6 +50,7 @@ namespace classes
                 for (int i = 0; i < size; i++)
                 {
                     squares.Add(new Coords(x + i, y));
+                    aliveSquares.Add(new Coords(x + i, y));
                 }
             }
         }
@@ -55,19 +60,20 @@ namespace classes
             size = Size;
             coords = new Coords (x, y);
             squares = new List<Coords>();
+            aliveSquares = new List<Coords>();
             setPosition(x, y, d);
-
+            
         }
 
         public HitResponse CheckHit(Coords shot)
         {
             HitResponse res = HitResponse.Miss;
-            for(int i = 0; i < squares.Count; i++)
+            for(int i = 0; i < aliveSquares.Count; i++)
             {
-                if (squares[i].Equals(shot))
+                if (aliveSquares[i].Equals(shot))
                 {
-                    squares.RemoveAt(i);
-                    if (squares.Count > 0)
+                    aliveSquares.RemoveAt(i);
+                    if (aliveSquares.Count > 0)
                         res = HitResponse.Hit;
                     else
                         res = HitResponse.Destroy;
@@ -100,7 +106,7 @@ namespace classes
             else
             {
                 int xlast = s.squares[s.squares.Count - 1].x, ylast = s.squares[s.squares.Count - 1].y;
-                int thisxlast = this.squares[s.squares.Count - 1].x, thisylast = this.squares[s.squares.Count - 1].y;
+                int thisxlast = this.squares[this.squares.Count - 1].x, thisylast = this.squares[this.squares.Count - 1].y;
 
                 bool first_first = Math.Abs(s.coords.x - this.coords.x) >= 2 || Math.Abs(s.coords.y - this.coords.y) >= 2;
                 bool first_last = Math.Abs(s.coords.x - thisxlast) >= 2 || Math.Abs(s.coords.y - thisylast) >= 2;

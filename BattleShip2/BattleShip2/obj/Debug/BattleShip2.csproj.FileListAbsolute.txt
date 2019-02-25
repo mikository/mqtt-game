@@ -1,0 +1,10 @@
+C:\College\2\BattleShip2\BattleShip2\bin\Debug\BattleShip2.exe.config
+C:\College\2\BattleShip2\BattleShip2\bin\Debug\BattleShip2.exe
+C:\College\2\BattleShip2\BattleShip2\bin\Debug\BattleShip2.pdb
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.csprojAssemblyReference.cache
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.Form1.resources
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.Properties.Resources.resources
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.csproj.GenerateResource.cache
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.csproj.CoreCompileInputs.cache
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.exe
+C:\College\2\BattleShip2\BattleShip2\obj\Debug\BattleShip2.pdb

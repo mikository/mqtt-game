@@ -6,21 +6,68 @@ using System.Threading.Tasks;
 
 namespace classes
 {
-    class Battlefield
+    public class Battlefield
     {
-        List<Ship> ships = new List<Ship>();
-        List<Coords> shots = new List<Coords>();
+        public List<Ship> ships;
+        public List<Coords> shots;
+
+        public short[,] field = new short[10,10];
 
         public Battlefield()
         {
-            ships.Add(new Ship(2, 1, 1, Direction.Horisontal));
-            ships.Add(new Ship(3, 2, , Direction.Vertical));
+            shots = new List<Coords>();
+            ships = new List<Ship>();
+            //addShip(new Ship(2, 4, 3, Direction.Horisontal));
+            //addShip(new Ship(1, 1, 1, Direction.Horisontal));
+            //addShip(new Ship(2, 7, 3, Direction.Vertical));
+        }
+        private void addShipToField(Ship s)
+        {
+            foreach(Coords c in s.squares)
+            {
+                field[c.x, c.y] = 1;
+            }
+        }
+        private void initEmptyField()
+        {
+            for(int i = 0; i < 10; i++)
+            {
+                for (int j = 0; j < 10; j++)
+                {
+                    field[j, i] = 0;
+                }
+            }
+        }
+
+        public bool addShot(Coords c)
+        {
+
+            shots.Add(c);
+            field[c.x, c.y] = 2;
+            return true;
+        }
+
+        private bool CheckCollision(Ship newShip)
+        {
+            foreach(Ship s in this.ships)
+            {
+                if(s.Collides(newShip))
+                    return false;
+            }
+            return true;
         }
 
         public bool addShip(Ship s)
         {
-            ships.Add(s);
-            return true;
+            if (CheckCollision(s))
+            {
+                ships.Add(s);
+                addShipToField(s);
+                return true;
+            }
+            else {
+                return false;
+            }
         }
 
         public HitResponse Hit(Coords c) 
@@ -37,13 +84,15 @@ namespace classes
 
         public List<Coords> GetCoords()
         {
-
+            List<Coords> res = new List<Coords>();
+            foreach (Ship c in ships)
+            {
+                res.AddRange(c.squares);
+            }
+            return res;
         }
 
 
 
     }
-
-
-
 }

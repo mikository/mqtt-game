@@ -1,0 +1,11 @@
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\obj\Debug\classes.csprojResolveAssemblyReference.cache
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\obj\Debug\classes.csproj.CoreCompileInputs.cache
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\classes.dll
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\classes.pdb
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\obj\Debug\classes.dll
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\obj\Debug\classes.pdb
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\M2Mqtt.Net.dll
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\M2Mqtt.Net.pdb
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\Home-PC\Desktop\C# advanced\mqtt game\classes\bin\Debug\Newtonsoft.Json.xml

@@ -24,6 +24,8 @@ namespace SFMLFront
 
         const int START_SHIPS = 30;
 
+        static bool turn;
+        static Game game;
         static mqtt m = new mqtt();
         static RectangleShape[,] fieldMain = new RectangleShape[SIZE, SIZE];
         static RectangleShape[,] fieldOpponent = new RectangleShape[SIZE, SIZE];
@@ -36,6 +38,10 @@ namespace SFMLFront
         static Ship chosenShip = null;
         static void Main(string[] args)
         {
+            Console.WriteLine("Enter your fleet Name");
+            string fleet = Console.ReadLine();
+            Player p = new Player(fleet, "NBCC");
+            game = new Game();
             var mode = new SFML.Window.VideoMode(1000, 600);
             var window = new SFML.Graphics.RenderWindow(mode, "SFML works!");
             window.SetFramerateLimit(60);
@@ -43,6 +49,7 @@ namespace SFMLFront
             //window.MouseMoved += Window_MouseMoved;
             window.MouseButtonPressed += Window_MouseButtonPressed;
             m.gotHit += M_gotHit;
+            
             //window.KeyPressed += Window_KeyPressed;
 
             //var circle = new SFML.Graphics.CircleShape(100f)
@@ -67,10 +74,17 @@ namespace SFMLFront
             opponentName.CharacterSize = 65;
             opponentName.FillColor = Color.Red;
             opponentName.Position = new Vector2f(OPPONENT_START_X, OPPONENT_START_Y - opponentName.CharacterSize - 20);
+
+            initEmptyField(fieldMain);
+            initEmptyField(fieldOpponent);
+
             DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-            //DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+            DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+
+
             while (window.IsOpen)
             {
+                
                 window.Clear();
                 // Process events
 
@@ -108,7 +122,16 @@ namespace SFMLFront
 
         }
 
-        
+        private static void initEmptyField(RectangleShape[,] field)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                for( int j = 0; j < 10; j++)
+                {
+                    field[j, i] = new RectangleShape(new Vector2f(SQUARE_SIZE, SQUARE_SIZE));
+                }
+            }
+        }
 
         private static void Window_MouseButtonPressed(object sender, MouseButtonEventArgs e)
         {
@@ -134,7 +157,6 @@ namespace SFMLFront
                             if (!mainBF.addShip(chosenShip))
                             {
                                 MessageBox.Show("You cannot place this ship here");
-
                             }
                             else
                             {
@@ -346,30 +368,30 @@ namespace SFMLFront
                 for (int j = 0; j < 10; j++)
                 {
                     //Console.WriteLine("Making shape " + i*j);
-                    RectangleShape s = new RectangleShape(new Vector2f(SQUARE_SIZE, SQUARE_SIZE));
+                    
                     switch (b.field[j, i])
                     {
                         case 0:
-                            s.FillColor = Color.Blue;
+                            shape[j, i].FillColor = Color.Blue;
                             break;
                         case 1:
-                            s.FillColor = Color.Green;
+                            shape[j, i].FillColor = Color.Green;
                             break;
                         case 2:
-                            s.FillColor = Color.Yellow;
+                            shape[j, i].FillColor = Color.Yellow;
                             break;
                         case 3:
-                            s.FillColor = Color.Cyan;
+                            shape[j, i].FillColor = Color.Cyan;
                             break;
                         case 4:
-                            s.FillColor = Color.Red;
+                            shape[j, i].FillColor = Color.Red;
                             break;
                         default:
-                            s.FillColor = Color.Black;
+                            shape[j, i].FillColor = Color.Black;
                             break;
                     }
-                    s.Position = new Vector2f(startX + j * SQUARE_SIZE + j * SPACING_SIZE, startY + i * SQUARE_SIZE + i * SPACING_SIZE);
-                    shape[j, i] = new RectangleShape(s);
+                    shape[j, i].Position = new Vector2f(startX + j * SQUARE_SIZE + j * SPACING_SIZE, startY + i * SQUARE_SIZE + i * SPACING_SIZE);
+                    
                 }
             }
         }
@@ -397,7 +419,7 @@ namespace SFMLFront
                 
             }
         }
-
+       
         private static void Window_Closed(object sender, EventArgs e)
         {
 

@@ -24,6 +24,10 @@ namespace classes
 
         public short[,] field = new short[10,10];
 
+        public event EventHandler Ready;
+        public event EventHandler Defeted;
+
+
         public Battlefield(string name)
         {
             shots = new List<Coords>();
@@ -82,6 +86,10 @@ namespace classes
             {
                 ships.Add(s);
                 addShipToField(s);
+                if (fieldReady())
+                {
+                    Ready.Invoke(this, EventArgs.Empty);
+                }
                 return true;
             }
             else {

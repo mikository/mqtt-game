@@ -37,12 +37,18 @@ namespace classes
             //addShip(new Ship(1, 1, 1, Direction.Horisontal));
             //addShip(new Ship(2, 7, 3, Direction.Vertical));
         }
-        private void addShipToField(Ship s)
+        private bool addShipToField(Ship s)
         {
-            foreach(Coords c in s.squares)
+            foreach (Coords c in s.squares)
+            {
+                if (c.x > 9 || c.y > 9)
+                    return false;
+            }
+            foreach (Coords c in s.squares)
             {
                 field[c.x, c.y] = 1;
             }
+            return true;
         }
         private void initEmptyField()
         {
@@ -84,11 +90,17 @@ namespace classes
         {
             if (CheckCollision(s) && checkMaxShips(s.size))
             {
+                
+                if(!addShipToField(s))
+                {
+                    return false;
+                }
                 ships.Add(s);
-                addShipToField(s);
                 if (fieldReady())
                 {
-                    Ready.Invoke(this, EventArgs.Empty);
+                    EventHandler tmp = Ready;
+                    if(tmp != null)
+                        Ready.Invoke(this, EventArgs.Empty);
                 }
                 return true;
             }
@@ -115,7 +127,7 @@ namespace classes
                 return true;
             }
         }
-        public void Hit(Coords c) 
+        public HitResponse Hit(Coords c) 
         {
             HitResponse res = HitResponse.Miss;
             if (field[c.x, c.y] < 2)
@@ -133,7 +145,7 @@ namespace classes
                     else if (res == HitResponse.Destroy)
                     {
                         foreach(Coords co in s.squares)
-                        field[co.x, co.y] = 4;
+                            field[co.x, co.y] = 4;
                         break;
                     }
 
@@ -147,7 +159,7 @@ namespace classes
             {
                 res = HitResponse.Error;
             }
-            //return res;
+            return res;
         }
 
         public List<Coords> GetCoords()

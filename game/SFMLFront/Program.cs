@@ -26,29 +26,39 @@ namespace SFMLFront
 
         static bool turn;
         static Game game;
-        static mqtt m = new mqtt();
+        //static mqtt m = new mqtt();
         static RectangleShape[,] fieldMain = new RectangleShape[SIZE, SIZE];
         static RectangleShape[,] fieldOpponent = new RectangleShape[SIZE, SIZE];
         static List<RectangleShape> shipsToChoose = new List<RectangleShape>();
-        static Battlefield mainBF = new Battlefield("Mike");
-        static Battlefield opponentBF = new Battlefield("Olena");
-
+        //static Battlefield mainBF = new Battlefield("Mike");
+        //static Battlefield opponentBF = new Battlefield("Olena");
+        static Text opponentName = new Text();
+        static Text opponentStatus = new Text();
+        static Text mainStatus = new Text();
+        static Text mainName = new Text();
+        static Font main = new Font("TheBattleCont.ttf");
         static bool choosing = true;
         static bool hovering = false;
         static Ship chosenShip = null;
+        static bool gameRunning = false;
         static void Main(string[] args)
         {
             Console.WriteLine("Enter your fleet Name");
             string fleet = Console.ReadLine();
-            Player p = new Player(fleet, "NBCC");
-            game = new Game();
+            Player p = new Player(fleet);
+            game = new Game("battleship", "NBCC", p, fleet);
             var mode = new SFML.Window.VideoMode(1000, 600);
             var window = new SFML.Graphics.RenderWindow(mode, "SFML works!");
+            game.me.Battlefield.Ready += Battlefield_Ready;
+            game.OpponentFound += Game_OpponentFound;
+            game.Lost += Game_Lost;
+            game.Won += Game_Won;
+            //game.me.Battlefield.Ready += Battlefield_Ready;
             window.SetFramerateLimit(60);
-            m.connect();
+            //m.connect();
             //window.MouseMoved += Window_MouseMoved;
             window.MouseButtonPressed += Window_MouseButtonPressed;
-            m.gotHit += M_gotHit;
+            //m.gotHit += M_gotHit;
             
             //window.KeyPressed += Window_KeyPressed;
 
@@ -59,27 +69,30 @@ namespace SFMLFront
 
 
             // Start the game loop
-            Font main = new Font("TheBattleCont.ttf");
+            
 
-            Text mainName = new Text();
+            
             mainName.Font = main;
-            mainName.DisplayedString = mainBF.Name;
+            mainName.DisplayedString = game.me.Battlefield.Name;
             mainName.CharacterSize = 65;
             mainName.FillColor = Color.Green;
             mainName.Position = new Vector2f(PLAYER_START_X, PLAYER_START_Y - mainName.CharacterSize - 20);
 
-            Text opponentName = new Text();
-            opponentName.Font = main;
-            opponentName.DisplayedString = opponentBF.Name;
-            opponentName.CharacterSize = 65;
-            opponentName.FillColor = Color.Red;
-            opponentName.Position = new Vector2f(OPPONENT_START_X, OPPONENT_START_Y - opponentName.CharacterSize - 20);
+            
+            mainStatus.Font = main;
+            mainStatus.DisplayedString = game.me.Status.ToString();
+            mainStatus.CharacterSize = 40;
+            mainStatus.FillColor = Color.Yellow;
+            mainStatus.Position = new Vector2f(PLAYER_START_X + (SQUARE_SIZE + SPACING_SIZE) * 6, PLAYER_START_Y - mainName.CharacterSize - 20);
 
+
+            
+           
             initEmptyField(fieldMain);
             initEmptyField(fieldOpponent);
 
-            DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-            DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+            DrawBattlefield(game.me.Battlefield, PLAYER_START_X, PLAYER_START_Y, fieldMain);
+            //DrawBattlefield(game.opponent.Battlefield, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
 
 
             while (window.IsOpen)
@@ -101,25 +114,59 @@ namespace SFMLFront
                         fieldOpponent[f.X, f.Y].FillColor = Color.White;
                         break;
                     default:
-                        DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-                        DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+                        DrawBattlefield(game.me.Battlefield, PLAYER_START_X, PLAYER_START_Y, fieldMain);
+                        if (gameRunning)
+                            DrawBattlefield(game.opponent.Battlefield, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
                         break;
                 }
                 //window.Draw(circle);
-                if(!(opponentBF  is null))
-                    DisplayBF(window, fieldOpponent, SIZE);
-                DisplayBF(window, fieldMain, SIZE);
+                if(!(game.opponent is null))        //change to check if ene,y present
+                    DisplayBF(window, fieldOpponent, SIZE, opponentName, opponentStatus);
+                DisplayBF(window, fieldMain, SIZE, mainName, mainStatus);
                 DrawShips(window);
                 if (chosenShip != null)
                 {
                     DrawShip(Mouse.GetPosition(window), window, chosenShip, Color.Red);
                 }
                 // Finally, display the rendered frame on screen
-                window.Draw(mainName);
-                window.Draw(opponentName);
+                
                 window.Display();
             }
 
+        }
+
+        private static void Game_Won(object sender, EventArgs e)
+        {
+            MessageBox.Show("You Won");
+        }
+
+        private static void Game_Lost(object sender, EventArgs e)
+        {
+            MessageBox.Show("You Lost");
+        }
+
+        private static void Game_OpponentFound(object sender, EventArgs e)
+        {
+            opponentName.Font = main;
+            opponentName.DisplayedString = game.opponent.fleetName;
+            opponentName.CharacterSize = 65;
+            opponentName.FillColor = Color.Red;
+            opponentName.Position = new Vector2f(OPPONENT_START_X, OPPONENT_START_Y - opponentName.CharacterSize - 20);
+
+
+            opponentStatus.Font = main;
+            opponentStatus.DisplayedString = game.opponent.Status.ToString();
+            opponentStatus.CharacterSize = 40;
+            opponentStatus.FillColor = Color.Yellow;
+            opponentStatus.Position = new Vector2f(OPPONENT_START_X + (SQUARE_SIZE + SPACING_SIZE) * 6, PLAYER_START_Y - mainName.CharacterSize - 20);
+
+            gameRunning = true;
+
+        }
+
+        private static void Battlefield_Ready(object sender, EventArgs e)
+        {
+            game.Start();
         }
 
         private static void initEmptyField(RectangleShape[,] field)
@@ -154,7 +201,7 @@ namespace SFMLFront
                         if (chosenShip != null)
                         {
                             chosenShip.setPosition(f.X, f.Y, chosenShip.direction);
-                            if (!mainBF.addShip(chosenShip))
+                            if (!game.me.Battlefield.addShip(chosenShip))
                             {
                                 MessageBox.Show("You cannot place this ship here");
                             }
@@ -165,7 +212,7 @@ namespace SFMLFront
                         }
                         else
                         {
-                            mainBF.Hit(new Coords(f.X, f.Y));
+                            //game.me.Battlefield.Hit(new Coords(f.X, f.Y));      //change to game add hit
                         }
                     }
                         
@@ -173,14 +220,15 @@ namespace SFMLFront
                         //mainBF.field[f.X, f.Y] = 2;
                         break;
                     case 2:             //opponent field
-                        fieldOpponent[f.X, f.Y].FillColor = Color.Yellow;
+                    game.Soot(new Coords(f.X, f.Y), game.opponent);
                         break;
                     case 3:
                         chosenShip = new Ship(getShipFromSquare(f.X), 0, 0, Direction.Horisontal);
                         break;
                     default:
-                        DrawBattlefield(mainBF, PLAYER_START_X, PLAYER_START_Y, fieldMain);
-                        DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+                        DrawBattlefield(game.me.Battlefield, PLAYER_START_X, PLAYER_START_Y, fieldMain);
+                        if(gameRunning)
+                            DrawBattlefield(game.opponent.Battlefield, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
                         break;
                 
             }
@@ -203,16 +251,16 @@ namespace SFMLFront
             }
         }
 
-        private static void M_gotHit(object sender, EventArgs e)
-        {
-            if(opponentBF is null)
-            {
-                return;
-            }
-            opponentBF.addShot((Coords)sender);
-            //Console.WriteLine(((Coords)sender).x);
-            DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
-        }
+        //private static void M_gotHit(object sender, EventArgs e)
+        //{
+        //    if(opponentBF is null)
+        //    {
+        //        return;
+        //    }
+        //    opponentBF.addShot((Coords)sender);
+        //    //Console.WriteLine(((Coords)sender).x);
+        //    DrawBattlefield(opponentBF, OPPONENT_START_X, OPPONENT_START_Y, fieldOpponent);
+        //}
 
         
 
@@ -277,7 +325,7 @@ namespace SFMLFront
                 int xf = xt / (SQUARE_SIZE + SPACING_SIZE);
                 return new Field(xf, yf, 1);
             }
-            else if (mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, mousePos.X, mousePos.Y) && !(opponentBF is null))
+            else if (mouseOverSquare(OPPONENT_START_X, OPPONENT_START_Y, mousePos.X, mousePos.Y) && !(game.opponent is null))
             {
                 int xt = mousePos.X - OPPONENT_START_X;
                 int yt = mousePos.Y - OPPONENT_START_Y;
@@ -349,8 +397,10 @@ namespace SFMLFront
             }
             //return true;
         }
-        private static void DisplayBF(RenderWindow w, RectangleShape[,] shape, int size)
+        private static void DisplayBF(RenderWindow w, RectangleShape[,] shape, int size, Text header, Text status)
         {
+            w.Draw(header);
+            w.Draw(status);
             for (int i = 0; i < 10; i++)
             {
                 for (int j = 0; j < 10; j++)

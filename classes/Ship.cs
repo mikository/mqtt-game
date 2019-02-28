@@ -27,6 +27,8 @@ namespace classes
         public List<Coords> squares;
         private List<Coords> aliveSquares;
 
+        public bool destroyed;
+
         public Direction direction { get; set; }
 
 
@@ -62,7 +64,7 @@ namespace classes
             squares = new List<Coords>();
             aliveSquares = new List<Coords>();
             setPosition(x, y, d);
-            
+            destroyed = false;
         }
 
         public HitResponse CheckHit(Coords shot)
@@ -76,7 +78,10 @@ namespace classes
                     if (aliveSquares.Count > 0)
                         res = HitResponse.Hit;
                     else
+                    {
                         res = HitResponse.Destroy;
+                        destroyed = true;
+                    }
                 }
             }
             return res;

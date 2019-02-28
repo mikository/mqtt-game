@@ -68,25 +68,25 @@ namespace classes
                 {
                     if (c.response == FireResponse.hit)
                     {
-                        myTurn = true;
+                        //myTurn = true;
                         field = 3;
                     }
                     else
                     {
                         field = 2;
-                        myTurn = false;
+                        //myTurn = false;
                     }
                 }
                 else if (c.result == FireResult.sunk)
                 {
-                    myTurn = true;
+                    //myTurn = true;
                     field = 4;
                 }
                 else     //implement o win
                 {
                     Won.Invoke(me, EventArgs.Empty);
                 }
-
+                myTurn = false;
                 opponent.Battlefield.field[getIntFromLetter(c.x), c.y] = field;
             }
         }
@@ -102,14 +102,14 @@ namespace classes
                 {
                     case HitResponse.Hit:
                         m.RespondToShot(FireResponse.hit, c.x, c.y, opponent.fleetName, this.region);
-                        myTurn = false;
+                       // myTurn = false;
                         break;
                     case HitResponse.Miss:
                         m.RespondToShot(FireResponse.miss, c.x, c.y, opponent.fleetName, this.region);
-                        myTurn = true;
+                        //myTurn = true;
                         break;
                     case HitResponse.Destroy:
-                        myTurn = false;
+                        //myTurn = false;
                         m.RespondToShot(FireResponse.hit, c.x, c.y, opponent.fleetName, this.region, me.isFleetDestroyed() ? FireResult.fleetdestroyed : FireResult.sunk);
                         break;
                     default:
@@ -117,7 +117,8 @@ namespace classes
                 }
                 if (me.isFleetDestroyed())
                     Lost.Invoke(me, EventArgs.Empty);
-                    
+
+                myTurn = true;
             }
 
         }

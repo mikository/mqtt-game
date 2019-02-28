@@ -110,7 +110,6 @@ namespace SFMLFront
                         fieldMain[f.X, f.Y].FillColor = Color.White;
                         break;
                     case 2:
-
                         fieldOpponent[f.X, f.Y].FillColor = Color.White;
                         break;
                     default:
